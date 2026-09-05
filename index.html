@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Macramé Weave Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="toolbar">
+      <div class="toolbar-left">
+        <span class="app-title">Macramé</span>
+        <div class="toolbar-divider"></div>
+        <input type="text" id="project-name-input" class="project-name-input" value="Untitled Design" title="Click to rename" />
+        <div class="toolbar-divider"></div>
+        <div class="file-menu-wrap">
+          <button id="btn-file-menu" title="File actions">File ▾</button>
+          <div id="file-menu" class="file-menu hidden">
+            <button id="btn-new">New design</button>
+            <button id="btn-save">Save  <span class="menu-shortcut">⌘S</span></button>
+            <button id="btn-duplicate">Duplicate</button>
+            <button id="btn-load">Load</button>
+            <div class="file-menu-divider"></div>
+            <button id="btn-export">Export PNG</button>
+          </div>
+        </div>
+        <div class="toolbar-group">
+          <button id="btn-undo" title="Undo  ⌘Z" class="icon-btn">↩︎</button>
+          <button id="btn-redo" title="Redo  ⌘⇧Z" class="icon-btn">↪︎</button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <button id="btn-mirror-h" title="Mirror H — paint strokes are mirrored left↔right">Mirror H</button>
+        <button id="btn-mirror-v" title="Mirror V — paint strokes are mirrored top↔bottom">Mirror V</button>
+        <button id="btn-symmetrize" title="Symmetrize — copy the top-left quadrant to all mirror quadrants, making the whole pattern perfectly symmetrical">Symmetrize</button>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group" title="Shift pattern — wraps at edges">
+          <button id="btn-shift-left"  class="icon-btn" title="Shift pattern left">←</button>
+          <button id="btn-shift-up"    class="icon-btn" title="Shift pattern up">↑</button>
+          <button id="btn-shift-down"  class="icon-btn" title="Shift pattern down">↓</button>
+          <button id="btn-shift-right" class="icon-btn" title="Shift pattern right">→</button>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <label>Columns
+          <input type="number" id="input-cols" min="2" max="80" value="41" />
+        </label>
+        <label>Rows
+          <input type="number" id="input-rows" min="2" max="80" value="41" />
+        </label>
+        <label title="Cell size — how large each weave crossing appears on screen">Size
+          <input type="range" id="input-cell-size" min="12" max="60" value="28" />
+        </label>
+        <label title="Frame — number of border rows/columns that are locked as plain weave edging">Frame
+          <input type="number" id="input-frame-pad" min="0" max="8" value="2" />
+        </label>
+        <label>Weave
+          <select id="select-weave">
+            <option value="plain">Plain</option>
+            <option value="twill">Twill 2/2</option>
+            <option value="twill31">Twill 3/1</option>
+            <option value="basket">Basket 2×2</option>
+            <option value="rib">Rib</option>
+            <option value="warpFront">Warp Front</option>
+            <option value="weftFront">Weft Front</option>
+          </select>
+        </label>
+        <label>Grid
+          <select id="select-grid-overlay">
+            <option value="0">Off</option>
+            <option value="4">¼</option>
+            <option value="5">⅕</option>
+            <option value="6">⅙</option>
+            <option value="8">⅛</option>
+          </select>
+        </label>
+        <div class="toolbar-divider"></div>
+        <button id="btn-theme" title="Toggle light / dark  (no shortcut)">☀︎</button>
+      </div>
+    </header>
+
+    <div id="main">
+      <aside id="sidebar">
+        <div id="sidebar-resize-handle"></div>
+        <section class="panel" id="palette-panel">
+          <h3>Palette
+            <button id="btn-new-palette" class="small" title="Create a new empty palette">+ New</button>
+          </h3>
+          <input type="file" id="input-palette-image" accept="image/*" style="display:none" />
+          <div id="palette-selector"></div>
+          <div id="palette-swatches"></div>
+          <div id="palette-inline-editor" class="hidden"></div>
+          <div id="palette-editor" class="hidden">
+            <input type="text" id="palette-name-input" placeholder="Palette name" />
+            <div id="color-editor-list"></div>
+            <button id="btn-add-color" class="small">+ Add colour</button>
+            <div class="palette-actions">
+              <button id="btn-save-palette">Save palette</button>
+              <button id="btn-delete-palette" class="danger">Delete</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="rope-panel">
+          <div class="rope-panel-header">
+            <h3 id="rope-panel-title" style="margin-bottom:0">Rope segments</h3>
+            <div class="select-all-btns">
+              <button id="btn-select-all-warp" class="small" title="Select all warp columns">All warp</button>
+              <button id="btn-select-all-weft" class="small" title="Select all weft rows">All weft</button>
+            </div>
+          </div>
+          <p class="hint" id="rope-hint">Click a header to select. ⌘/Ctrl+click to add to selection. Esc to deselect.</p>
+          <div id="rope-segment-editor"></div>
+        </section>
+        <div id="sidebar-version">v1.3</div>
+      </aside>
+
+      <div id="canvas-container">
+        <div id="canvas-scroll">
+          <div id="canvas-inner">
+            <canvas id="weave-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="hidden">
+      <div id="modal-load" class="modal">
+        <h2>Load Design</h2>
+        <div id="project-list"></div>
+        <div class="modal-actions">
+          <button id="btn-modal-close">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
