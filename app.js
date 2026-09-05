@@ -18,11 +18,11 @@ const DEFAULT_PALETTES = [
 ];
 
 let state = {
-  cols: 41,
-  rows: 41,
+  cols: 45,
+  rows: 43,
   cellSize: 22,
   framePad: 2,
-  weaveType: 'plain',
+  weaveType: 'warpFront',
   warpColors: [],
   weftColors: [],
   cellOverrides: {},
@@ -109,13 +109,11 @@ function deleteProject(id) {
 // ── Rope colour helpers ───────────────────────────────────────────────────────
 
 function initRopeColors() {
-  const palette = activePalette();
-  const c0 = palette.colors[0]?.hex ?? '#cccccc';
   state.warpColors = Array.from({ length: state.cols }, () => [
-    { colorHex: c0, end: state.rows },
+    { colorHex: '#1a1a1a', end: state.rows },
   ]);
   state.weftColors = Array.from({ length: state.rows }, () => [
-    { colorHex: c0, end: state.cols },
+    { colorHex: '#ffffff', end: state.cols },
   ]);
   state.cellOverrides = {};
 }
@@ -1604,8 +1602,8 @@ function init() {
 
   document.getElementById('btn-new').addEventListener('click', () => {
     if (_isDirty && !confirm('Start a new design? Unsaved changes will be lost.')) return;
-    state.cols = 41; state.rows = 41; state.framePad = 2;
-    state.cellSize = 22;
+    state.cols = 45; state.rows = 43; state.framePad = 2;
+    state.cellSize = 22; state.weaveType = 'warpFront';
     state.selectedRopes = [];
     state.currentProjectName = 'Untitled Design';
     initRopeColors();
