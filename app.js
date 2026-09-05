@@ -1729,9 +1729,11 @@ function init() {
     const imgWidthPx  = _imp.scale * cs;
     const imgHeightPx = (_imp.scale / _imp.ar) * cs;
 
-    // Position relative to canvas-inner
-    const leftPx = HEADER + fp * cs + _imp.x * cs;
-    const topPx  = HEADER + fp * cs + _imp.y * cs;
+    // Position relative to canvas-inner, accounting for the canvas's own offset
+    // within that container (canvas-inner uses flexbox centering, so the canvas
+    // is not at 0,0 within it — offsetLeft/Top gives the actual gap).
+    const leftPx = weaveCanvas.offsetLeft + HEADER + fp * cs + _imp.x * cs;
+    const topPx  = weaveCanvas.offsetTop  + HEADER + fp * cs + _imp.y * cs;
 
     importPreviewCanvas.style.left   = leftPx + 'px';
     importPreviewCanvas.style.top    = topPx  + 'px';
@@ -1843,6 +1845,8 @@ function init() {
   importPreviewCanvas.addEventListener('pointermove', e => {
     if (!_imp || !importPreviewCanvas.hasPointerCapture(e.pointerId)) return;
     const cs = state.cellSize;
+    // clientX is in viewport CSS pixels; divide by cs to get cell units.
+    // No DPR adjustment needed here — cs is already in CSS (logical) pixels.
     _imp.x = _imp._dragStartX + (e.clientX - _imp._dragStartClientX) / cs;
     _imp.y = _imp._dragStartY + (e.clientY - _imp._dragStartClientY) / cs;
     renderImportPreview();
